@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+# database
+  mongodb:
+    image: "mongo"
+    volumes:
+      - data:/data/db
+    env_file:
+      - ./env/mongo.env
+# backend
+  nodeapp:
+    build: ./backend
+    volumes:
+      - /app/node_modules
+      - logsvol:/app/logs
+      - ./backend:/app
+    ports:
+      - '80:80'
+    depends_on:
+      - mongodb
+#Frontend
+  reactapp:
+    build: ./frontend
+    volumes:
+      - ./frontend/src:/app/src
+    ports:
+      - "3000:3000"
+    depends_on:
+      - nodeapp
+    stdin_open: true
+    tty: true
+
+
+volumes:
+  data:
+  logsvol:
